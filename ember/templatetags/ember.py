@@ -89,7 +89,7 @@ def jquery_js():
 
 @register.simple_tag
 def ember_full_js(jquery=True):
-    libs = (handlebars_js(), ember_js())
+    libs = (handlebars_js(), ember_js(), ember_data_js())
     if jquery:
         libs = (jquery_js(),) + libs
     return '\n'.join(libs)
