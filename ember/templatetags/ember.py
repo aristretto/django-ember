@@ -11,7 +11,7 @@ Inspired by:
 from django import template
 from django.conf import settings
 
-from djangojs.templatetags.js import VerbatimNode, verbatim_tags, js_lib, jquery_js
+from djangojs.templatetags.js import VerbatimNode, verbatim_tags, js_lib
 
 register = template.Library()
 
@@ -69,22 +69,22 @@ def handlebars(parser, token):
 
 @register.simple_tag
 def handlebars_js():
-    return js_lib('handlebars.js' if settings.DEBUG else 'handlebars.min.js')
+    return js_lib('handlebars/handlebars.js' if settings.DEBUG else 'handlebars/handlebars.min.js')
 
 
 @register.simple_tag
 def ember_js():
-    return js_lib('ember.js' if settings.DEBUG else 'ember.min.js')
+    return js_lib('ember/ember.js' if settings.DEBUG else 'ember/ember.min.js')
 
 
 @register.simple_tag
 def ember_data_js():
-    return js_lib('ember-data.js' if settings.DEBUG else 'ember-data.min.js')
+    return js_lib('ember-data/ember-data.js' if settings.DEBUG else 'ember-data/ember-data.min.js')
 
 
 @register.simple_tag
-def tastypie_adapter_js():
-    return js_lib('tastypie_adapter.js' if settings.DEBUG else 'tastypie_adapter.min.js')
+def jquery_js():
+    return js_lib('jquery/dist/jquery.js' if settings.DEBUG else 'jquery/dist/jquery.min.js')
 
 
 @register.simple_tag
@@ -95,22 +95,13 @@ def ember_full_js(jquery=True):
     return '\n'.join(libs)
 
 
-@register.simple_tag
-def emberpie_js(jquery=True):
-    return '\n'.join((
-            ember_full_js(jquery),
-            ember_data_js(),
-            tastypie_adapter_js()
-        ))
-
-
 @register.inclusion_tag('ember/django_ember_js_tag.html')
 def django_ember_js(jquery=True):
     return {
         'djangojs_jquery': jquery,
     }
 
-    
+
 @register.tag(name='linkto')
 def do_linkto(parser, token):
     nodelist = parser.parse(('endlinkto',))
@@ -125,11 +116,11 @@ class LinkToNode(template.Node):
     '''
     Renders ``{% linkto arg1, "arg2" ... argn %} ... {% endlinkto %}``
     as ``{{#linkTo arg1 "arg2" ... argn }} ... {{/linkTo}}``.
-    
+
     The arguments are rendered ipsis literis, quotes included.
-    
+
     The tag content is parsed as a normal Django template (it is not like verbatim).
-    
+
     If you need a Handlebars.js tag or variable use ``{% ember varname %}``, this will
     be rendered as ``{{ varname }}``.
     '''
@@ -156,19 +147,19 @@ class EmberTagNode(template.Node):
     with Django template syntax. When using ``verbatim`` style tags
     sometimes it is hard to spot what is Ember and what is Django;
     the purpose of this tag is making it easier.
-    
+
     Usage:
-    
+
     ::
         {% ember varname %}
         {% ember #tagname arg1 arg2 ... argn %} ... {% ember /tagname %}
-    
+
     This will render as:
-    
+
     ::
         {{varname}}
         {{#tagname arg1 arg2 ... argn}} ... {{/tagname}}
-    
+
     This tag is not aware of the Ember template syntax, it will
     just escape the constructs but will not make any check.
     '''
